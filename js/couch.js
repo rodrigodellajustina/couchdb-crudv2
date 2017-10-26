@@ -24,7 +24,7 @@ $.ajax({
         data : JSON.stringify(jsonAluno),
         contentType : "application/json",
         success : function(jsonResultSearch){
-            alert(JSON.stringify(jsonResultSearch));
+            alert("Aluno Inserido com sucesso");
         },
         error : function(error){
             alert(error.error);
@@ -38,12 +38,38 @@ return;
 
 function AlunoInserir(){      
     
-    jsonAluno.nome         = document.getElementById("aluno_nome").value;
-    jsonAluno.sobrenome    = document.getElementById("aluno_sobrenome").value;
-    jsonAluno.cidade       = document.getElementById("aluno_cidade").value;
-    jsonAluno.dtnascimento = document.getElementById("aluno_nascimento").value;
-    couchRest("", "POST");
+    /* busca na coleção projetocrud para saber se aluno_nome e aluno_sobre 
+       estão incluídos na minha coleção do couchdb.
+    */
+    jsonAluno = {};
+    jsonAluno.selector = {"$and" : [{"nome":document.getElementById("aluno_nome").value}, {"sobrenome" :document.getElementById("aluno_sobrenome").value}]};
+    jsonAluno.fields   = ["nome", "sobrenome"];
     
+    $.ajax({
+        url : "http://127.0.0.1:5984/projetocrud/_find",
+        type : "POST",
+        data : JSON.stringify(jsonAluno),
+        contentType : "application/json",
+        success : function(jsonResultSearch){
+            if(jsonResultSearch.docs.length > 0){
+                // mostrar mensagem
+                alert("Aluno [nome,sobrenome] já existentes");
+            }else{
+                // inserir
+                jsonAluno.nome         = document.getElementById("aluno_nome").value;
+                jsonAluno.sobrenome    = document.getElementById("aluno_sobrenome").value;
+                jsonAluno.cidade       = document.getElementById("aluno_cidade").value;
+                jsonAluno.dtnascimento = document.getElementById("aluno_nascimento").value;
+                couchRest("", "POST");
+            }
+        },
+        error : function(error){
+            alert(error.error);
+        }
+       })
+
+
+
     jsonAluno = {};
     return 1;
 }
