@@ -5,7 +5,7 @@ var jsonResultSearch = {}
 var i=0;
 var nretorno = -1;
 
-function couchRest(pmetodo, ptype){
+function couchRest(pmetodo, ptype, pchavedoc){
 
 // Responsável para comunicação do REST com JavaScript.
 // JavaScript + AJAX.
@@ -18,13 +18,25 @@ if(pmetodo == ""){
     curl = const_url+"/"+const_colecao+"/"+pmetodo;
 }
 
+if (pchavedoc == ""){
+    
+}else{
+    curl = curl + "/"+pchavedoc
+}
+
+
 $.ajax({
         url : curl,
-        type : "POST",
+        type : ptype,
         data : JSON.stringify(jsonAluno),
         contentType : "application/json",
         success : function(jsonResultSearch){
-            alert("Aluno Inserido com sucesso");
+            if(ptype == "POST"){
+                alert("Aluno Inserido com sucesso");
+            }else{
+                alert("Aluno Alterado com sucesso");
+            }
+            
         },
         error : function(error){
             alert(error.error);
@@ -60,7 +72,7 @@ function AlunoInserir(){
                 jsonAluno.sobrenome    = document.getElementById("aluno_sobrenome").value;
                 jsonAluno.cidade       = document.getElementById("aluno_cidade").value;
                 jsonAluno.dtnascimento = document.getElementById("aluno_nascimento").value;
-                couchRest("", "POST");
+                couchRest("", "POST", "");
             }
         },
         error : function(error){
@@ -107,13 +119,16 @@ function AlunoBuscar(){
             //alert("fez o acesso");
             jsonResultSearch = result;
             if (jsonResultSearch.docs.length > 0) {
+
+                for (var j=0; j <= jsonResultSearch.docs.length; j++){
                 
-            $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='nome"       +i+"' type='text' placeholder='Nome'  value='"+jsonResultSearch.docs[0].nome+"'     class='form-control input-md' readonly/> </td>" + 
-                                             "     <td><input name='sobrenome"  +i+"' type='text' placeholder='Sobrenome' value='"+jsonResultSearch.docs[0].sobrenome +"' class='form-control input-md' readonly></td> " +
-                                             "     <td><input list='livrog1' class='form-control input-list'><datalist id='livrog1'> <option value='Livro A'><option value='Livro B'><option value='Livro C'> <option value='Livro D'><option value='Livro E'></datalist></td>" + 
-                                             "     <td><input list='livrog1' class='form-control input-list'><datalist id='livrog1'> <option value='Livro A'><option value='Livro B'><option value='Livro C'> <option value='Livro D'><option value='Livro E'></datalist></td>" );
-            $('#tab_logic').append('<tr id="addr'+(i+1)+'"></tr>');
-            i++;
+                    $('#addr'+i).html("<td>"+ (i+1) +"</td><td><input name='nome"       +i+"' type='text' placeholder='Nome'  value='"+jsonResultSearch.docs[j].nome+"'     class='form-control input-md' readonly/> </td>" + 
+                                                     "     <td><input name='sobrenome"  +i+"' type='text' placeholder='Sobrenome' value='"+jsonResultSearch.docs[j].sobrenome +"' class='form-control input-md' readonly></td> " +
+                                                    "     <td><input list='livrog1' class='form-control input-list'><datalist id='livrog1'> <option value='Livro A'><option value='Livro B'><option value='Livro C'> <option value='Livro D'><option value='Livro E'></datalist></td>" + 
+                                                    "     <td><input list='livrog1' class='form-control input-list'><datalist id='livrog2'> <option value='Livro A'><option value='Livro B'><option value='Livro C'> <option value='Livro D'><option value='Livro E'></datalist></td>" );
+                    $('#tab_alunos').append('<tr id="addr'+(i+1)+'"></tr>');
+                    i++;
+                }
         
             }else{
                 alert("Aluno não encontrado");
@@ -129,5 +144,11 @@ function AlunoBuscar(){
 
     jsonAluno = {};
     return 1;
+
+}
+
+function AlunoRelacionarLivro(){
+
+
 
 }
